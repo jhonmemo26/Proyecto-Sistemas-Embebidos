@@ -4,7 +4,7 @@
     - Jhon Alejandro Medina Morales: Techinal Lead \
     - Jerónimo Valencia Vallejo: Firmware Engineer \
     - Sebastián Álvarez Palacio: Hardware Integration Engineer \
-    - Todos: Verification & Testin Engineer
+    - Todos: Verification & Testing Engineer
 
 ---------------------------------------------------------------------------------
 
