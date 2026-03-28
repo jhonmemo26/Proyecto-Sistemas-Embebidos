@@ -1,6 +1,6 @@
 # Requisitos del Sistema
 
-## 2. Requisitos Funcionales
+## 1. Requisitos Funcionales
 
 | Código | Nombre | Descripción |
 |--------|--------|------------|
@@ -17,7 +17,7 @@
 
 ---
 
-## 3. Requisitos No Funcionales
+## 2. Requisitos No Funcionales
 
 | Código | Nombre | Descripción |
 |--------|--------|------------|
