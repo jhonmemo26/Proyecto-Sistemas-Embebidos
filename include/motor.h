@@ -13,4 +13,6 @@ void head_center(void);
 
 void head_set_target(int deg);
 
+void motor_set_speed(int delay_ms);
+
 #endif

@@ -39,7 +39,7 @@ void oled_thinking_animation(void)
 {
     ssd1306_clear();
 
-    ssd1306_draw_bitmap(blink_bitmap);
+    ssd1306_draw_bitmap(thinking_bitmap);
 
     ssd1306_show();
 }

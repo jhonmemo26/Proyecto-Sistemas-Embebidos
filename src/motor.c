@@ -7,7 +7,7 @@
 #define IN3 GPIO_NUM_27
 #define IN4 GPIO_NUM_14
 
-#define MOTOR_DELAY_MS 10
+static int motor_delay_ms = 10;
 
 #define STEPS_PER_REV 2048
 
@@ -108,6 +108,15 @@ void motor_init(void)
 
 void motor_update(void)
 {
+    static int counter = 0;
+
+    counter++;
+
+    if(counter < motor_delay_ms)
+        return;
+
+    counter = 0;
+
     if(current_steps < target_steps)
     {
         motor_step(1);
@@ -148,3 +157,8 @@ void head_set_target(int deg)
 {
     target_steps = deg_to_steps(deg);
 }
+
+void motor_set_speed(int delay_ms)
+{
+    motor_delay_ms = delay_ms;
+}   

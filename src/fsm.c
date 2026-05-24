@@ -64,6 +64,7 @@ void fsm_update(void)
 
                 head_center();
 
+
                 break;
 
 
@@ -76,6 +77,8 @@ void fsm_update(void)
                 printf("[FSM] Estado: DESPERTANDO\n");
 
                 oled_wakeup_animation();
+
+                   motor_set_speed(2);
 
                 break;
 
@@ -104,6 +107,8 @@ void fsm_update(void)
                 printf("[FSM] Estado: PROCESANDO\n");
 
                 oled_thinking_animation();
+
+                motor_set_speed(1);
 
                 break;
         }
@@ -214,7 +219,7 @@ void fsm_update(void)
             // Timeout -> volver a IDLE
             //========================================
 
-            if(listening_timeout >= 400)
+            if(listening_timeout >= 800)
             {
                 listening_timeout = 0;
 

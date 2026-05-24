@@ -25,6 +25,6 @@ void app_main(void)
 
         motor_update();
 
-        vTaskDelay(pdMS_TO_TICKS(25));
+        vTaskDelay(pdMS_TO_TICKS(10));
     }
 }
