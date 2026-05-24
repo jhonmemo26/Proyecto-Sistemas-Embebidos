@@ -1,42 +1,30 @@
+#include "freertos/FreeRTOS.h"
+#include "freertos/task.h"
+
+#include "touch.h"
+#include "fsm.h"
 #include "oled.h"
+#include "motor.h"
+#include "microphone.h"
 
-#include "ssd1306.h"
-#include "bitmaps.h"
-
-void oled_init(void)
+void app_main(void)
 {
-    ssd1306_init();
-}
+    touch_init();
 
-void oled_idle_animation(void)
-{
-    ssd1306_clear();
+    oled_init();
 
-    ssd1306_draw_bitmap(sleepy_eyes_bitmap);
+    fsm_init();
 
-    ssd1306_show();
-}
+    motor_init();
 
-void oled_wakeup_animation(void)
-{
-    ssd1306_clear();
+    //microphone_init();
 
-    ssd1306_draw_bitmap(awake_eyes_bitmap);
+    while(1)
+    {
+        fsm_update();
 
-    ssd1306_show();
-}
+        motor_update();
 
-void oled_listening_animation(void)
-{
-
-}
-
-void oled_thinking_animation(void)
-{
-
-}
-
-void oled_response_animation(void)
-{
-
+        vTaskDelay(pdMS_TO_TICKS(25));
+    }
 }

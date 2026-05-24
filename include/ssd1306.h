@@ -2,6 +2,7 @@
 #define SSD1306_H
 
 #include <stdint.h>
+extern const uint8_t thinking_bitmap[1024];
 
 // Inicializa el OLED
 void ssd1306_init(void);

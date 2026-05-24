@@ -3,23 +3,9 @@
 
 #include <stdint.h>
 
-// Bitmap ojos dormidos
-static const uint8_t sleepy_eyes_bitmap[1024] = {
-
-    // TODO:
-    // Aqui luego pondremos el bitmap real
-
-    [0 ... 1023] = 0x00
-};
-
-
-// Bitmap ojos despiertos
-static const uint8_t awake_eyes_bitmap[1024] = {
-
-    // TODO:
-    // Aqui luego pondremos el bitmap real
-
-    [0 ... 1023] = 0xFF
-};
+extern const uint8_t neutral_bitmap[1024];
+extern const uint8_t happy_bitmap[1024];
+extern const uint8_t angry_bitmap[1024];
+extern const uint8_t blink_bitmap[1024];
 
 #endif

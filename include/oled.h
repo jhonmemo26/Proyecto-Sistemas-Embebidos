@@ -13,4 +13,8 @@ void oled_thinking_animation(void);
 
 void oled_response_animation(void);
 
+void oled_show_awake(void);
+
+void oled_show_blink(void);
+
 #endif
