@@ -1,12 +1,12 @@
 //==================================================
-// fsm.h
+// server_comm.h
 //==================================================
 
-#ifndef FSM_H
-#define FSM_H
+#ifndef SERVER_COMM_H
+#define SERVER_COMM_H
 
-void fsm_init();
+void send_audio();
 
-void fsm_update();
+void send_greeting();
 
 #endif

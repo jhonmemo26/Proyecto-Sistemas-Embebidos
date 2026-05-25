@@ -1,271 +1,170 @@
-#include <stdio.h>
-#include <stdbool.h>
+//==================================================
+// fsm.c
+//==================================================
 
 #include "fsm.h"
+
+#include <stdio.h>
+
 #include "states.h"
 
-#include "touch.h"
-#include "oled.h"
+#include "audio.h"
+#include "server_comm.h"
+#include "tts_player.h"
 #include "motor.h"
+#include "oled.h"
+#include "touch.h"
 
-static RobotState current_state;
-static RobotState previous_state;
+//==================================================
+// CURRENT STATE
+//==================================================
 
-static int head_direction = 1;
+static RobotState current_state =
+    STATE_IDLE;
 
-static int counter = 0;
+//==================================================
+// FSM INIT
+//==================================================
 
-static int blink_counter = 0;
-
-static bool blink_state = false;
-
-static int wakeup_counter = 0;
-
-static int listening_timeout = 0;
-
-
-//====================================================
-// Inicialización FSM
-//====================================================
-
-void fsm_init(void)
+void fsm_init()
 {
     current_state = STATE_IDLE;
 
-    previous_state = -1;
+    printf("[FSM] INIT\n");
 }
 
+//==================================================
+// FSM UPDATE
+//==================================================
 
-//====================================================
-// Actualización FSM
-//====================================================
-
-void fsm_update(void)
+void fsm_update()
 {
-    //================================================
-    // Detectar cambio de estado
-    //================================================
-
-    if(current_state != previous_state)
-    {
-        previous_state = current_state;
-
-        switch(current_state)
-        {
-            //========================================
-            // ESTADO IDLE
-            //========================================
-
-            case STATE_IDLE:
-
-                printf("[FSM] Estado: IDLE\n");
-
-                oled_idle_animation();
-
-                head_center();
-
-
-                break;
-
-
-            //========================================
-            // ESTADO DESPERTANDO
-            //========================================
-
-            case STATE_DESPERTANDO:
-
-                printf("[FSM] Estado: DESPERTANDO\n");
-
-                oled_wakeup_animation();
-
-                   motor_set_speed(2);
-
-                break;
-
-
-            //========================================
-            // ESTADO ESCUCHANDO
-            //========================================
-
-            case STATE_ESCUCHANDO:
-
-                printf("[FSM] Estado: ESCUCHANDO\n");
-
-                oled_listening_animation();
-
-                head_center();
-
-                break;
-
-
-            //========================================
-            // ESTADO PROCESANDO
-            //========================================
-
-            case STATE_PROCESANDO:
-
-                printf("[FSM] Estado: PROCESANDO\n");
-
-                oled_thinking_animation();
-
-                motor_set_speed(1);
-
-                break;
-        }
-    }
-
-
-    //================================================
-    // Lógica continua de estados
-    //================================================
-
     switch(current_state)
     {
-        //============================================
+        //==========================================
         // IDLE
-        //============================================
+        //==========================================
 
         case STATE_IDLE:
 
+            oled_idle_animation();
+
+            head_center();
+
+            printf("[FSM] IDLE\n");
+
             if(touch_detected())
             {
-                printf("[FSM] Touch detectado\n");
+                printf("[FSM] TOUCH DETECTED\n");
 
-                current_state = STATE_DESPERTANDO;
+                current_state =
+                    STATE_DESPERTANDO;
             }
 
             break;
 
-
-        //============================================
+        //==========================================
         // DESPERTANDO
-        //============================================
+        //==========================================
+
+        //==================================================
+        // fsm.c
+        //==================================================
 
         case STATE_DESPERTANDO:
 
-            //========================================
-            // Movimiento cabeza
-            //========================================
+            printf("[FSM] DESPERTANDO\n");
 
-            counter++;
+            oled_wakeup_animation();
 
-            if(counter >= 140)
-            {
-                counter = 0;
+            head_move_left(10);
 
-                if(head_direction)
-                {
-                    head_set_target(60);
-                }
-                else
-                {
-                    head_set_target(-60);
-                }
+            //======================================
+            // GENERATE GREETING
+            //======================================
 
-                head_direction = !head_direction;
-            }
+            send_greeting();
 
+            //======================================
+            // PLAY GREETING
+            //======================================
 
-            //========================================
-            // Parpadeo OLED
-            //========================================
+            play_tts();
 
-            blink_counter++;
-
-            if(!blink_state && blink_counter >= 200)
-            {
-                oled_show_blink();
-
-                blink_state = true;
-
-                blink_counter = 0;
-            }
-
-            if(blink_state && blink_counter >= 15)
-            {
-                oled_show_awake();
-
-                blink_state = false;
-
-                blink_counter = 0;
-            }
-
-
-            //========================================
-            // Cambio a ESCUCHANDO
-            //========================================
-
-            wakeup_counter++;
-
-            if(wakeup_counter >= 500)
-            {
-                wakeup_counter = 0;
-
-                current_state = STATE_ESCUCHANDO;
-            }
+            current_state =
+                STATE_ESCUCHANDO;
 
             break;
 
-
-        //============================================
+        //==========================================
         // ESCUCHANDO
-        //============================================
+        //==========================================
 
         case STATE_ESCUCHANDO:
 
-            listening_timeout++;
+            printf("[FSM] ESCUCHANDO\n");
 
-            //========================================
-            // Timeout -> volver a IDLE
-            //========================================
+            oled_listening_animation();
 
-            if(listening_timeout >= 800)
-            {
-                listening_timeout = 0;
+            head_move_right(10);
 
-                current_state = STATE_IDLE;
-            }
+            //======================================
+            // RECORD AUDIO
+            //======================================
 
+            record_audio();
 
-            //========================================
-            // TEMPORAL:
-            // simulación detección voz
-            //========================================
-
-           if(voice_touch_detected())
-{
-    listening_timeout = 0;
-
-    current_state = STATE_PROCESANDO;
-}
+            current_state =
+                STATE_PROCESANDO;
 
             break;
 
-
-        //============================================
+        //==========================================
         // PROCESANDO
-        //============================================
+        //==========================================
 
         case STATE_PROCESANDO:
 
-    counter++;
+            printf("[FSM] PROCESANDO\n");
 
-    if(counter >= 180)
-    {
-        counter = 0;
+            oled_thinking_animation();
 
-        if(head_direction)
-        {
-            head_set_target(20);
-        }
-        else
-        {
-            head_set_target(-20);
-        }
+            head_center();
 
-        head_direction = !head_direction;
-    }
+            //======================================
+            // SEND AUDIO
+            //======================================
 
-    break;
+            send_audio();
+
+            current_state =
+                STATE_HABLANDO;
+
+            break;
+
+        //==========================================
+        // HABLANDO
+        //==========================================
+
+        case STATE_HABLANDO:
+
+            printf("[FSM] HABLANDO\n");
+
+            oled_response_animation();
+
+            head_move_left(5);
+
+            //======================================
+            // PLAY RESPONSE
+            //======================================
+
+            play_tts();
+
+            head_move_right(5);
+
+            current_state =
+                STATE_IDLE;
+
+            break;
     }
 }
