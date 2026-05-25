@@ -1,0 +1,32 @@
+# Sistema de Logging
+
+El sistema implementa un mecanismo de logging serial con el objetivo de facilitar la depuración, monitoreo y validación del comportamiento interno del firmware durante la ejecución.
+
+La estrategia de logging fue diseñada para permitir el seguimiento de eventos relevantes dentro de la Máquina de Estados Finitos (FSM), las comunicaciones del sistema y las interacciones con periféricos.
+
+El logging se realiza mediante comunicación UART utilizando mensajes estructurados enviados al monitor serial de PlatformIO.
+
+Los logs incluyen niveles de severidad para clasificar la importancia de cada evento:
+
+- INFO: eventos normales de funcionamiento.
+- WARN: advertencias o condiciones anómalas recuperables.
+- ERROR: fallos críticos o errores de ejecución.
+
+Ejemplos de eventos registrados:
+
+- Cambio de estados de la FSM.
+- Conexión exitosa a red WiFi.
+- Inicio y finalización de captura de audio.
+- Errores de comunicación HTTP.
+- Timeouts de interacción.
+- Inicialización de periféricos.
+
+El sistema de logging permite:
+
+- Facilitar el proceso de depuración.
+- Validar transiciones de estados.
+- Detectar errores de comunicación.
+- Monitorear el comportamiento del sistema en tiempo real.
+- Obtener evidencia funcional durante las demostraciones del proyecto.
+
+La salida de logs se realiza mediante UART y puede visualizarse utilizando el monitor serial de PlatformIO.
