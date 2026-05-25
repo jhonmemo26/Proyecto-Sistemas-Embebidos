@@ -4,18 +4,20 @@
 
 MiniCraibot es un asistente robótico interactivo desarrollado como proyecto de la asignatura Sistemas Embebidos de la Universidad EIA.
 
-El sistema está diseñado para interactuar con usuarios mediante sensores táctiles, expresiones visuales en pantalla OLED, movimiento motorizado de cabeza y futuros servicios de inteligencia artificial basados en voz.
+El sistema está diseñado para interactuar con usuarios mediante sensores táctiles, expresiones visuales en pantalla OLED, movimiento motorizado de cabeza y servicios de inteligencia artificial basados en reconocimiento de voz y generación automática de respuestas.
 
 La arquitectura del firmware está basada en una Máquina de Estados Finitos (FSM), permitiendo un diseño modular, escalable y mantenible.
 
 El objetivo del proyecto es simular un flujo de desarrollo cercano a un entorno profesional de sistemas embebidos, incluyendo:
-- arquitectura de firmware,
-- manejo de requerimientos,
-- trazabilidad,
-- testing,
-- manejo de errores,
-- documentación técnica,
-- control de versiones con GitHub.
+
+- Arquitectura de firmware
+- Manejo de requerimientos
+- Trazabilidad
+- Testing
+- Manejo de errores
+- Documentación técnica
+- Logging estructurado
+- Control de versiones con GitHub
 
 ---
 
@@ -27,12 +29,16 @@ Actualmente el sistema implementa:
 - Detección de interacción mediante sensor touch
 - Animaciones emocionales en pantalla OLED SSD1306
 - Movimiento de cabeza mediante motor paso a paso
-- Gestión de timeout en estado ESCUCHANDO
-- Estado PROCESANDO simulado
+- Grabación de audio mediante micrófono I2S
+- Comunicación WiFi
+- Comunicación HTTP con servidor FastAPI
+- Integración con servicios de inteligencia artificial
+- Generación automática de respuestas
+- Reproducción de respuestas mediante TTS
 - Organización modular del firmware
-- Comunicación serial UART para debugging
+- Logging serial UART para debugging
 - Manejo de transiciones de estado
-- Integración inicial de sensores y actuadores
+- Integración de sensores y actuadores
 - Flujo colaborativo usando GitHub
 
 ---
@@ -47,10 +53,16 @@ Actualmente el sistema implementa:
 | RF-004 | El sistema debe implementar una arquitectura FSM. |
 | RF-005 | El robot debe pasar de estado IDLE a DESPERTANDO mediante interacción touch. |
 | RF-006 | El sistema debe ingresar al estado ESCUCHANDO después del despertar. |
-| RF-007 | El sistema debe detectar una simulación de voz mediante un segundo sensor touch. |
-| RF-008 | El sistema debe pasar al estado PROCESANDO después de detectar voz. |
-| RF-009 | El sistema debe retornar automáticamente a IDLE mediante timeout. |
-| RF-010 | El sistema debe generar logs UART para debugging y validación. |
+| RF-007 | El sistema debe grabar audio mediante micrófono I2S. |
+| RF-008 | El sistema debe enviar audio a un servidor FastAPI usando HTTP. |
+| RF-009 | El sistema debe procesar audio utilizando servicios de inteligencia artificial. |
+| RF-010 | El sistema debe generar respuestas automáticas mediante IA. |
+| RF-011 | El sistema debe reproducir respuestas mediante TTS. |
+| RF-012 | El sistema debe retornar automáticamente al estado IDLE después de finalizar la interacción. |
+| RF-013 | El sistema debe conectarse a una red WiFi. |
+| RF-014 | El sistema debe generar logs UART para debugging y validación. |
+| RF-015 | El sistema debe implementar comunicación modular entre periféricos y módulos de firmware. |
+| RF-016 | El sistema debe mostrar diferentes expresiones visuales según el estado actual de la FSM. |
 
 ---
 
@@ -61,7 +73,12 @@ Actualmente el sistema implementa:
 | RNF-001 | El firmware debe ser modular y mantenible. |
 | RNF-002 | El proyecto debe organizarse usando archivos separados .c y .h. |
 | RNF-003 | El sistema debe usar GitHub para control de versiones y trabajo colaborativo. |
-| RNF-004 | El sistema debe funcionar usando una fuente de alimentación externa. |
+| RNF-004 | El sistema debe funcionar mediante alimentación externa estable. |
+| RNF-005 | El sistema debe mantener una arquitectura escalable para futuras integraciones. |
+| RNF-006 | El sistema debe permitir depuración mediante logs UART estructurados. |
+| RNF-007 | El sistema debe utilizar protocolos estándar de comunicación embebida. |
+| RNF-008 | El firmware debe permitir integración futura de nuevos sensores y actuadores. |
+| RNF-009 | El sistema debe mantener tiempos de respuesta adecuados para interacción en tiempo real. |
 
 ---
 
@@ -71,16 +88,23 @@ El firmware se encuentra dividido en módulos independientes:
 
 - Módulo FSM
 - Módulo OLED
+- Módulo SSD1306
 - Módulo de control del motor
 - Módulo de sensores touch
-- Futuro módulo de micrófono
-- Futuro módulo de audio/TTS
+- Módulo WiFi
+- Módulo de comunicación con servidor
+- Módulo de audio
+- Módulo TTS
+- Módulo de bitmaps
+- Módulo de logging
 
 Esta arquitectura permite:
-- escalabilidad,
-- mantenibilidad,
-- facilidad de integración,
-- depuración modular.
+
+- Escalabilidad
+- Mantenibilidad
+- Facilidad de integración
+- Depuración modular
+- Separación de responsabilidades
 
 ---
 
@@ -90,17 +114,19 @@ Esta arquitectura permite:
 |-----------|-----|
 | I2C | Comunicación con pantalla OLED SSD1306 |
 | UART | Logging serial y debugging |
-| I2S | Futuro manejo de micrófono y audio |
+| I2S | Comunicación con micrófono y reproducción de audio |
+| HTTP | Comunicación ESP32 ↔ servidor FastAPI |
+| WiFi | Comunicación inalámbrica del sistema |
 
 ---
 
-# Estados Actuales de la FSM
+# Estados de la FSM
 
 - IDLE
 - DESPERTANDO
 - ESCUCHANDO
 - PROCESANDO
-- RESPONDIENDO (en desarrollo)
+- HABLANDO
 
 ---
 
@@ -110,6 +136,17 @@ Los casos de prueba y validación del sistema se encuentran documentados en:
 
 - `TC_Robot_EIA.docx`
 
+Las pruebas realizadas incluyen:
+
+- Validación de transiciones FSM
+- Validación de comunicación WiFi
+- Validación de comunicación HTTP
+- Validación de reproducción TTS
+- Validación de captura de audio
+- Validación de animaciones OLED
+- Validación de movimiento del motor
+- Validación de interacción touch
+
 ---
 
 # Control de Versiones
@@ -117,11 +154,14 @@ Los casos de prueba y validación del sistema se encuentran documentados en:
 El proyecto es mantenido mediante GitHub utilizando commits colaborativos realizados por todos los integrantes del equipo.
 
 El repositorio contiene:
-- código fuente,
-- documentación,
-- evidencia de pruebas,
-- diagramas,
-- arquitectura de firmware,
-- trazabilidad de requerimientos.
+
+- Código fuente
+- Documentación técnica
+- Evidencia de pruebas
+- Diagramas
+- Arquitectura de firmware
+- Matriz SRTM
+- Casos de prueba
+- Requerimientos funcionales y no funcionales
 
 ---
