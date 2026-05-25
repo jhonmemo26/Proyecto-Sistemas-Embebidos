@@ -1,0 +1,32 @@
+# Gestión de Comunicaciones
+
+El sistema implementa una arquitectura de comunicaciones distribuida entre el ESP32 y un servidor externo basado en FastAPI.
+
+La comunicación inalámbrica se realiza mediante WiFi, permitiendo que el sistema embebido establezca conexión con una red local para enviar y recibir información.
+
+El flujo general de comunicación es el siguiente:
+
+1. El usuario interactúa con el robot mediante el sensor touch.
+2. El sistema entra al estado ESCUCHANDO y realiza captura de audio mediante micrófono I2S.
+3. El audio capturado es enviado mediante solicitudes HTTP a un servidor FastAPI.
+4. El servidor procesa el audio utilizando servicios de inteligencia artificial.
+5. Se genera una respuesta textual automática.
+6. El servidor genera audio TTS correspondiente a la respuesta.
+7. El ESP32 descarga y reproduce la respuesta utilizando el módulo de audio.
+
+El sistema utiliza múltiples protocolos de comunicación:
+
+- I2C: comunicación con la pantalla OLED SSD1306.
+- I2S: captura y reproducción de audio digital.
+- UART: logging serial y depuración.
+- HTTP: transferencia de información entre ESP32 y servidor FastAPI.
+- WiFi: conectividad inalámbrica del sistema.
+
+La separación entre procesamiento embebido y procesamiento de inteligencia artificial permite:
+
+- Reducir carga computacional en el ESP32.
+- Mantener una arquitectura modular y escalable.
+- Facilitar futuras integraciones con nuevos servicios IA.
+- Permitir actualización independiente entre firmware y servidor.
+
+Esta arquitectura distribuida permite mantener tiempos de respuesta adecuados y una interacción más natural con el usuario.
