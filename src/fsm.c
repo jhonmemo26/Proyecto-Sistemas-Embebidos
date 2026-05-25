@@ -5,6 +5,7 @@
 #include "fsm.h"
 
 #include <stdio.h>
+#include <stdbool.h>
 
 #include "states.h"
 
@@ -21,6 +22,10 @@
 
 static RobotState current_state =
     STATE_IDLE;
+
+    static int blink_counter = 0;
+    static bool blink_state = false;
+    static int wakeup_counter = 0;
 
 //==================================================
 // FSM INIT
@@ -47,21 +52,42 @@ void fsm_update()
 
         case STATE_IDLE:
 
-            oled_idle_animation();
+    printf("[FSM] IDLE\n");
 
-            head_center();
+    head_center();
 
-            printf("[FSM] IDLE\n");
+    blink_counter++;
 
-            if(touch_detected())
-            {
-                printf("[FSM] TOUCH DETECTED\n");
+    //======================================
+    // BLINK
+    //======================================
 
-                current_state =
-                    STATE_DESPERTANDO;
-            }
+    if(!blink_state && blink_counter >= 80)
+    {
+        oled_show_blink();
 
-            break;
+        blink_state = true;
+
+        blink_counter = 0;
+    }
+    else if(blink_state && blink_counter >= 8)
+    {
+        oled_idle_animation();
+
+        blink_state = false;
+
+        blink_counter = 0;
+    }
+
+    if(touch_detected())
+    {
+        printf("[FSM] TOUCH DETECTED\n");
+
+        current_state =
+            STATE_DESPERTANDO;
+    }
+
+    break;
 
         //==========================================
         // DESPERTANDO
@@ -73,28 +99,50 @@ void fsm_update()
 
         case STATE_DESPERTANDO:
 
-            printf("[FSM] DESPERTANDO\n");
+    printf("[FSM] DESPERTANDO\n");
 
-            oled_wakeup_animation();
+    wakeup_counter++;
 
-            head_move_left(10);
+    //======================================
+    // PARPADEO
+    //======================================
 
-            //======================================
-            // GENERATE GREETING
-            //======================================
+    if(wakeup_counter < 10)
+    {
+        oled_show_blink();
+    }
+    else
+    {
+        oled_wakeup_animation();
+    }
 
-            send_greeting();
+    head_move_left(10);
 
-            //======================================
-            // PLAY GREETING
-            //======================================
+    //======================================
+    // ESPERAR UN POCO
+    //======================================
 
-            play_tts();
+    if(wakeup_counter >= 40)
+    {
+        wakeup_counter = 0;
 
-            current_state =
-                STATE_ESCUCHANDO;
+        //==================================
+        // GENERATE GREETING
+        //==================================
 
-            break;
+        send_greeting();
+
+        //==================================
+        // PLAY GREETING
+        //==================================
+
+        play_tts();
+
+        current_state =
+            STATE_ESCUCHANDO;
+    }
+
+    break;
 
         //==========================================
         // ESCUCHANDO
