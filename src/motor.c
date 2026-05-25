@@ -3,7 +3,7 @@
 #include "driver/gpio.h"
 
 #define IN1 GPIO_NUM_33
-#define IN2 GPIO_NUM_13
+#define IN2 GPIO_NUM_15
 #define IN3 GPIO_NUM_27
 #define IN4 GPIO_NUM_14
 

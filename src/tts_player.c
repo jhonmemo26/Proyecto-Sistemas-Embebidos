@@ -199,7 +199,7 @@ void play_tts()
             // 24kHz SAMPLE RATE
             //======================================
 
-            esp_rom_delay_us(42);
+            esp_rom_delay_us(35);
 
             total_samples++;
         }

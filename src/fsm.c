@@ -23,9 +23,11 @@
 static RobotState current_state =
     STATE_IDLE;
 
-    static int blink_counter = 0;
-    static bool blink_state = false;
-    static int wakeup_counter = 0;
+static int blink_counter = 0;
+
+static bool blink_state = false;
+
+static int wakeup_counter = 0;
 
 //==================================================
 // FSM INIT
@@ -52,97 +54,97 @@ void fsm_update()
 
         case STATE_IDLE:
 
-    printf("[FSM] IDLE\n");
+            printf("[FSM] IDLE\n");
 
-    head_center();
+            motor_set_speed(12);
 
-    blink_counter++;
+            head_center();
 
-    //======================================
-    // BLINK
-    //======================================
+            blink_counter++;
 
-    if(!blink_state && blink_counter >= 80)
-    {
-        oled_show_blink();
+            //======================================
+            // BLINK
+            //======================================
 
-        blink_state = true;
+            if(!blink_state && blink_counter >= 80)
+            {
+                oled_show_blink();
 
-        blink_counter = 0;
-    }
-    else if(blink_state && blink_counter >= 8)
-    {
-        oled_idle_animation();
+                blink_state = true;
 
-        blink_state = false;
+                blink_counter = 0;
+            }
+            else if(blink_state && blink_counter >= 8)
+            {
+                oled_idle_animation();
 
-        blink_counter = 0;
-    }
+                blink_state = false;
 
-    if(touch_detected())
-    {
-        printf("[FSM] TOUCH DETECTED\n");
+                blink_counter = 0;
+            }
 
-        current_state =
-            STATE_DESPERTANDO;
-    }
+            if(touch_detected())
+            {
+                printf("[FSM] TOUCH DETECTED\n");
 
-    break;
+                current_state =
+                    STATE_DESPERTANDO;
+            }
+
+            break;
 
         //==========================================
         // DESPERTANDO
         //==========================================
 
-        //==================================================
-        // fsm.c
-        //==================================================
-
         case STATE_DESPERTANDO:
 
-    printf("[FSM] DESPERTANDO\n");
+            printf("[FSM] DESPERTANDO\n");
 
-    wakeup_counter++;
+            motor_set_speed(8);
 
-    //======================================
-    // PARPADEO
-    //======================================
+            wakeup_counter++;
 
-    if(wakeup_counter < 10)
-    {
-        oled_show_blink();
-    }
-    else
-    {
-        oled_wakeup_animation();
-    }
+            //======================================
+            // PARPADEO
+            //======================================
 
-    head_move_left(10);
+            if(wakeup_counter < 10)
+            {
+                oled_show_blink();
+            }
+            else
+            {
+                oled_wakeup_animation();
+            }
 
-    //======================================
-    // ESPERAR UN POCO
-    //======================================
+            head_move_left(10);
 
-    if(wakeup_counter >= 40)
-    {
-        wakeup_counter = 0;
+            //======================================
+            // ESPERAR UN POCO
+            //======================================
 
-        //==================================
-        // GENERATE GREETING
-        //==================================
+            if(wakeup_counter >= 40)
+            {
+                wakeup_counter = 0;
 
-        send_greeting();
+                //==================================
+                // GENERATE GREETING
+                //==================================
 
-        //==================================
-        // PLAY GREETING
-        //==================================
+                send_greeting();
 
-        play_tts();
+                //==================================
+                // PLAY GREETING
+                //==================================
 
-        current_state =
-            STATE_ESCUCHANDO;
-    }
+                play_tts();
 
-    break;
+                current_state =
+                    STATE_ESCUCHANDO;
+            }
+
+            break;
 
         //==========================================
         // ESCUCHANDO
@@ -151,6 +153,8 @@ void fsm_update()
         case STATE_ESCUCHANDO:
 
             printf("[FSM] ESCUCHANDO\n");
+
+            motor_set_speed(4);
 
             oled_listening_animation();
 
@@ -175,9 +179,13 @@ void fsm_update()
 
             printf("[FSM] PROCESANDO\n");
 
+            motor_set_speed(2);
+
             oled_thinking_animation();
 
-            head_center();
+            head_move_left(3);
+
+            head_move_right(3);
 
             //======================================
             // SEND AUDIO
@@ -197,6 +205,8 @@ void fsm_update()
         case STATE_HABLANDO:
 
             printf("[FSM] HABLANDO\n");
+
+            motor_set_speed(5);
 
             oled_response_animation();
 
