@@ -67,7 +67,7 @@ void oled_show_blink(void)
 {
     ssd1306_clear();
 
-    ssd1306_draw_bitmap(blink_bitmap);
+    ssd1306_draw_bitmap(neutral_bitmap);
 
     ssd1306_show();
 }
