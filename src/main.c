@@ -6,7 +6,7 @@
 #include "oled.h"
 #include "motor.h"
 #include "microphone.h"
-
+//prueba
 void app_main(void)
 {
     touch_init();
